@@ -33,7 +33,7 @@ const secretRouter_1 = require("./routes/secretRouter");
 const app = (0, express_1.default)();
 dotenv.config();
 app.use(bodyParser.json());
-app.use("/orders", secretRouter_1.secretRouter);
+app.use("/", secretRouter_1.secretRouter);
 app.listen(process.env.PORT, () => {
     console.log("Node server started running");
 });

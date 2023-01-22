@@ -2,15 +2,27 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.findOne = exports.create = void 0;
 const db_1 = require("../db");
-const create = (secret, callback) => {
+const create = (secretText, expiresAt, remainingViews, callback) => {
+    const hashLength = 20;
+    const hash = generateHash(hashLength);
+    const createdAt = require('moment')().format('YYYY-MM-DD HH:mm:ss');
     const queryString = "INSERT INTO secrets (hash, secret_text, created_at, expires_at, remaining_views) VALUES (?, ?, ?, ?, ?)";
-    db_1.db.query(queryString, [secret.hash, secret.secretText, secret.createdAt, secret.expiresAt, secret.remainingViews], (err, result) => {
+    db_1.db.query(queryString, [hash, secretText, createdAt, expiresAt, remainingViews], (err, result) => {
         if (err) {
             callback(err);
         }
         ;
         const insertId = result.insertId;
-        callback(null, insertId);
+        if (insertId !== null) {
+            const secret = {
+                hash: hash,
+                secretText: secretText,
+                createdAt: createdAt,
+                expiresAt: expiresAt,
+                remainingViews: remainingViews
+            };
+            callback(null, secret);
+        }
     });
 };
 exports.create = create;
@@ -36,3 +48,15 @@ const findOne = (hash, callback) => {
     });
 };
 exports.findOne = findOne;
+const generateHash = (length) => {
+    let result = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+};
+const convertDate = (date) => {
+    Math.floor(new Date(date).getTime() / 1000);
+};

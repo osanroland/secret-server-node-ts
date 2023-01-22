@@ -3,17 +3,30 @@ import { OkPacket, RowDataPacket } from "mysql2";
 import { Secret } from "../types/secret";
 
 
-export const create = (secret: Secret, callback: Function) => {
+export const create = (secretText: string, expiresAt: Date, remainingViews: number,  callback: Function) => {
+    const hashLength = 20
+    const hash: string = generateHash(hashLength)
+    const createdAt = require('moment')().format('YYYY-MM-DD HH:mm:ss')
+
     const queryString = "INSERT INTO secrets (hash, secret_text, created_at, expires_at, remaining_views) VALUES (?, ?, ?, ?, ?)"
 
     db.query(
         queryString,
-        [secret.hash, secret.secretText, secret.createdAt, secret.expiresAt, secret.remainingViews],
+        [hash, secretText, createdAt, expiresAt, remainingViews],
         (err, result) => {
             if (err) { callback(err) };
 
             const insertId = (<OkPacket>result).insertId;
-            callback(null, insertId);
+            if (insertId !== null) {
+                const secret: Secret = {
+                    hash: hash,
+                    secretText: secretText,
+                    createdAt: createdAt,
+                    expiresAt: expiresAt,
+                    remainingViews: remainingViews
+                }
+                callback(null, secret);
+            }
         }
     );
 };
@@ -39,4 +52,18 @@ export const findOne = (hash: string, callback: Function) => {
         }
         callback(null, secret);
     });
+}
+
+const generateHash = (length: number) => {
+    let result = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+const convertDate = (date: Date) => {
+    Math.floor(new Date(date).getTime() / 1000)
 }

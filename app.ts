@@ -7,7 +7,7 @@ const app = express();
 dotenv.config();
 
 app.use(bodyParser.json());
-app.use("/orders", secretRouter);
+app.use("/", secretRouter);
 
 app.listen(process.env.PORT, () => {
     console.log("Node server started running");

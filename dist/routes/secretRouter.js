@@ -37,24 +37,42 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.secretRouter = void 0;
 const express_1 = __importDefault(require("express"));
-const orderModel = __importStar(require("../models/secretModel"));
+const secretModel = __importStar(require("../models/secretModel"));
 const secretRouter = express_1.default.Router();
 exports.secretRouter = secretRouter;
-secretRouter.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const secret = req.body;
-    orderModel.create(secret, (err, orderId) => {
+secretRouter.post("/secret", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const secretText = req.body.secretText;
+    const expiresAt = req.body.expiresAt;
+    const remainingViews = req.body.remainingViews;
+    secretModel.create(secretText, expiresAt, remainingViews, (err, secret) => {
         if (err) {
             return res.status(500).json({ "message": err.message });
         }
-        res.status(200).json({ "orderId": orderId });
+        res.status(201).json(secret);
     });
 }));
-secretRouter.get("/:hash", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+secretRouter.get("/secret/:hash", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const hash = String(req.params.hash);
-    orderModel.findOne(hash, (err, secret) => {
+    secretModel.findOne(hash, (err, secret) => {
         if (err) {
             return res.status(500).json({ "message": err.message });
         }
-        res.status(200).json({ "data": secret });
+        console.log(validate(secret));
+        if (validate(secret)) {
+            secret.remainingViews = decreaseRemainingViews(secret.remainingViews);
+            res.status(200).json({ "secret": secret });
+        }
+        else {
+            res.status(200).json({ message: 'Secret is no longer available' });
+        }
     });
+    const validate = (secret) => {
+        const now = new Date();
+        if (secret.expiresAt < now || secret.remainingViews === 0)
+            return false;
+        return true;
+    };
+    const decreaseRemainingViews = (remainingViews) => {
+        return remainingViews = remainingViews - 1;
+    };
 }));
