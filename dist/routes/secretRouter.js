@@ -40,6 +40,7 @@ const express_1 = __importDefault(require("express"));
 const secretModel = __importStar(require("../models/secretModel"));
 const secretRouter = express_1.default.Router();
 exports.secretRouter = secretRouter;
+let xml = require('xml');
 secretRouter.post("/secret", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const secretText = req.body.secretText;
     const expiresAt = req.body.expiresAt;
@@ -53,6 +54,7 @@ secretRouter.post("/secret", (req, res) => __awaiter(void 0, void 0, void 0, fun
 }));
 secretRouter.get("/secret/:hash", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const hash = String(req.params.hash);
+    console.log(req.headers.accept);
     secretModel.findOne(hash, (err, secret) => {
         if (err) {
             return res.status(500).json({ "message": err.message });

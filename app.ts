@@ -2,6 +2,7 @@ import * as dotenv from "dotenv";
 import express from "express";
 import * as bodyParser from "body-parser";
 import { secretRouter } from "./routes/secretRouter";
+import { Secret } from "./types/secret";
 
 const app = express();
 dotenv.config();

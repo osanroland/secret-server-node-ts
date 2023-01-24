@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import * as secretModel from "../models/secretModel";
 import { Secret } from "../types/secret";
 const secretRouter = express.Router();
+let xml = require('xml');
 
 secretRouter.post("/secret", async (req: Request, res: Response) => {
 
@@ -10,7 +11,6 @@ secretRouter.post("/secret", async (req: Request, res: Response) => {
     const remainingViews = req.body.remainingViews
 
     secretModel.create(secretText, expiresAt, remainingViews, (err: Error, secret: Secret) => {
-        
         if (err) {
             return res.status(500).json({ "message": err.message });
         }
@@ -20,8 +20,10 @@ secretRouter.post("/secret", async (req: Request, res: Response) => {
 });
 
 secretRouter.get("/secret/:hash", async (req: Request, res: Response) => {
-
+    
     const hash: string = String(req.params.hash);
+
+    const acceptType = req.headers.accept
 
     secretModel.findOne(hash, (err: Error, secret: Secret) => {
     
