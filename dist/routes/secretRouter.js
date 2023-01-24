@@ -57,13 +57,17 @@ secretRouter.get("/secret/:hash", (req, res) => __awaiter(void 0, void 0, void 0
         if (err) {
             return res.status(500).json({ "message": err.message });
         }
-        console.log(validate(secret));
         if (validate(secret)) {
             secret.remainingViews = decreaseRemainingViews(secret.remainingViews);
+            secretModel.updateRemainingViews(secret, (err, secret) => {
+                if (err) {
+                    return err;
+                }
+            });
             res.status(200).json({ "secret": secret });
         }
         else {
-            res.status(200).json({ message: 'Secret is no longer available' });
+            res.status(200).json({ "message": 'Secret is no longer available' });
         }
     });
     const validate = (secret) => {

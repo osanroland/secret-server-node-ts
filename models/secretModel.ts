@@ -54,6 +54,20 @@ export const findOne = (hash: string, callback: Function) => {
     });
 }
 
+export const updateRemainingViews = (secret: Secret, callback: Function) => {
+
+    const queryString = `UPDATE secrets SET remaining_views=?  WHERE hash=?`;
+
+    db.query(
+        queryString,
+        [secret.remainingViews, secret.hash],
+        (err, result) => {
+            if (err) { callback(err) }
+            callback(null);
+        }
+    );
+}
+
 const generateHash = (length: number) => {
     let result = '';
     let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -62,8 +76,4 @@ const generateHash = (length: number) => {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
-}
-
-const convertDate = (date: Date) => {
-    Math.floor(new Date(date).getTime() / 1000)
 }

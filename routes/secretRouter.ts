@@ -10,22 +10,33 @@ secretRouter.post("/secret", async (req: Request, res: Response) => {
     const remainingViews = req.body.remainingViews
 
     secretModel.create(secretText, expiresAt, remainingViews, (err: Error, secret: Secret) => {
+        
         if (err) {
             return res.status(500).json({ "message": err.message });
         }
+
         res.status(201).json(secret);
     });
 });
 
 secretRouter.get("/secret/:hash", async (req: Request, res: Response) => {
+
     const hash: string = String(req.params.hash);
+
     secretModel.findOne(hash, (err: Error, secret: Secret) => {
+    
         if (err) {
             return res.status(500).json({ "message": err.message });
         }
-        console.log(validate(secret))
+
         if (validate(secret)) {
             secret.remainingViews = decreaseRemainingViews(secret.remainingViews)
+            secretModel.updateRemainingViews(secret, (err: Error, secret: Secret) => {
+                if (err) {
+                    return err;
+                }
+            })
+
             res.status(200).json({ "secret": secret });
         } else {
             res.status(200).json({ "message" : 'Secret is no longer available' });

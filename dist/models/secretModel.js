@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findOne = exports.create = void 0;
+exports.updateRemainingViews = exports.findOne = exports.create = void 0;
 const db_1 = require("../db");
 const create = (secretText, expiresAt, remainingViews, callback) => {
     const hashLength = 20;
@@ -48,6 +48,16 @@ const findOne = (hash, callback) => {
     });
 };
 exports.findOne = findOne;
+const updateRemainingViews = (secret, callback) => {
+    const queryString = `UPDATE secrets SET remaining_views=?  WHERE hash=?`;
+    db_1.db.query(queryString, [secret.remainingViews, secret.hash], (err, result) => {
+        if (err) {
+            callback(err);
+        }
+        callback(null);
+    });
+};
+exports.updateRemainingViews = updateRemainingViews;
 const generateHash = (length) => {
     let result = '';
     let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -56,7 +66,4 @@ const generateHash = (length) => {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
-};
-const convertDate = (date) => {
-    Math.floor(new Date(date).getTime() / 1000);
 };
