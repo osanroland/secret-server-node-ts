@@ -32,6 +32,14 @@ const bodyParser = __importStar(require("body-parser"));
 const secretRouter_1 = require("./routes/secretRouter");
 const app = (0, express_1.default)();
 dotenv.config();
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    // Pass to next layer of middleware
+    next();
+});
 app.use(bodyParser.json());
 app.use("/", secretRouter_1.secretRouter);
 app.listen(process.env.PORT, () => {

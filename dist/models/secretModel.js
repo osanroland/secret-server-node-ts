@@ -15,11 +15,11 @@ const create = (secretText, expiresAt, remainingViews, callback) => {
         const insertId = result.insertId;
         if (insertId !== null) {
             const secret = {
-                hash: hash,
-                secretText: secretText,
-                createdAt: createdAt,
-                expiresAt: expiresAt,
-                remainingViews: remainingViews
+                "hash": hash,
+                "secretText": secretText,
+                "createdAt": createdAt,
+                "expiresAt": expiresAt,
+                "remainingViews": remainingViews
             };
             callback(null, secret);
         }
@@ -38,11 +38,11 @@ const findOne = (hash, callback) => {
         }
         const row = result[0];
         const secret = {
-            hash: row.hash,
-            secretText: row.secret_text,
-            createdAt: row.created_at,
-            expiresAt: row.expires_at,
-            remainingViews: row.remaining_views
+            "hash": row.hash,
+            "secretText": row.secret_text,
+            "createdAt": row.created_at,
+            "expiresAt": row.expires_at,
+            "remainingViews": row.remaining_views
         };
         callback(null, secret);
     });

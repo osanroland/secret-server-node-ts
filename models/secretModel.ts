@@ -19,11 +19,11 @@ export const create = (secretText: string, expiresAt: Date, remainingViews: numb
             const insertId = (<OkPacket>result).insertId;
             if (insertId !== null) {
                 const secret: Secret = {
-                    hash: hash,
-                    secretText: secretText,
-                    createdAt: createdAt,
-                    expiresAt: expiresAt,
-                    remainingViews: remainingViews
+                    "hash" : hash,
+                    "secretText": secretText,
+                    "createdAt": createdAt,
+                    "expiresAt": expiresAt,
+                    "remainingViews": remainingViews
                 }
                 callback(null, secret);
             }
@@ -44,11 +44,11 @@ export const findOne = (hash: string, callback: Function) => {
 
         const row = (<RowDataPacket>result)[0];
         const secret: Secret = {
-            hash: row.hash,
-            secretText: row.secret_text,
-            createdAt: row.created_at,
-            expiresAt: row.expires_at,
-            remainingViews: row.remaining_views
+            "hash": row.hash,
+            "secretText": row.secret_text,
+            "createdAt": row.created_at,
+            "expiresAt": row.expires_at,
+            "remainingViews": row.remaining_views
         }
         callback(null, secret);
     });
